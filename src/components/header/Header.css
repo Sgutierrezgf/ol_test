@@ -1,0 +1,59 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f1f1f1;
+    /* Fondo gris claro para el header */
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    /* Línea inferior para separar */
+}
+
+.content {
+    display: flex;
+}
+
+.logo {
+    background-color: #0A055A;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left .logo {
+    height: 40px;
+    margin-right: 20px;
+}
+
+.hamburger {
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-right .icon {
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+.profile-pic {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-left: 20px;
+    object-fit: cover;
+}

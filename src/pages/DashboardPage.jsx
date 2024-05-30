@@ -2,7 +2,7 @@
 
 function DashboardPage() {
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div >
             este mi DashboardPage
         </div>
     );

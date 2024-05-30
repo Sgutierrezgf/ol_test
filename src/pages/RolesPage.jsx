@@ -1,7 +1,7 @@
 
 function RolesPage() {
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div >
             Soy el rol
         </div>
     );

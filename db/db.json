@@ -29,19 +29,19 @@
             "time": "27/04/2022 18:65:00"
         },
         {
-            "id": "1",
+            "id": "2",
             "type": "warning",
             "details": "Se registraron NC's en GIASS",
             "time": "27/04/2022 18:65:00"
         },
         {
-            "id": "1",
+            "id": "3",
             "type": "info",
             "details": "GIASS fue desplegado",
             "time": "27/04/2022 18:65:00"
         },
         {
-            "id": "1",
+            "id": "4",
             "type": "warning",
             "details": "Se registraron NC's en Balance",
             "time": "27/04/2022 18:65:00"

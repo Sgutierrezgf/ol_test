@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from 'react'
 import { createContext, useContext, useState } from "react";
-import { loginRequest } from "../api/auth";
+import { loginRequest, getNotification, getTodos } from "../api/auth";
 
 export const AuthContext = createContext()
 
@@ -18,42 +18,82 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
     const [errorMessage, setErrorMessage] = useState("");
+    const [notification, setNotification] = useState(null);
+    const [todos, setTodos] = useState(null);
 
     useEffect(() => {
-        // Verificar si hay un token en el localStorage al cargar el componente
         const token = localStorage.getItem("token");
         if (token) {
-            // Aquí deberías verificar la validez del token (por ejemplo, mediante una solicitud al servidor)
-            // Si el token es válido, establece isAuthenticated en true y actualiza el estado del usuario si es necesario
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                setUser(user);
+            }
             setIsAuthenticated(true);
-            return
         }
     }, []);
 
     const signin = async (userData) => {
         try {
             const res = await loginRequest(userData);
-            // Si la solicitud fue exitosa (200 OK) y se recibieron datos del usuario
             if (res.status === 200 && res.data && res.data.length > 0) {
-                const token = res.data[0].token;// Suponiendo que el token está en el header Authorization
-                setUser(res.data);
+                const token = res.data[0].token;
+                const user = res.data[0];
+                setUser(user);
                 setIsAuthenticated(true);
-                setErrorMessage(""); // Limpiar mensaje de error si había alguno
-                localStorage.setItem("token", token); // Guardar el token en localStorage
+                setErrorMessage("");
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(user));
             } else {
-                // Manejar el caso en el que la solicitud fue exitosa pero no se encontraron datos de usuario
                 setErrorMessage("Usuario no existe");
             }
         } catch (error) {
-            // Manejar el caso de errores de red u otros errores
             console.log(error.message);
             setErrorMessage("Hubo un error al iniciar sesión");
         }
     };
 
+    const logout = () => {
+
+        // Limpiar el localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        // Limpiar el estado del usuario y la autenticación
+        setUser(null);
+        setIsAuthenticated(false);
+    };
+
+
+    useEffect(() => {
+        const fetchNotificationData = async () => {
+            try {
+                const employeesData = await getNotification();
+
+                setNotification(employeesData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchNotificationData();
+    }, []);
+
+    useEffect(() => {
+        const fetchTodosData = async () => {
+            try {
+                const todosData = await getTodos();
+
+                setTodos(todosData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchTodosData();
+    }, []);
 
     return (
-        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage }}>
+        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage, logout, notification, todos }}>
             {children}
         </AuthContext.Provider>
     )

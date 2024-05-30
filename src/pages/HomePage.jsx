@@ -25,7 +25,7 @@ function HomePage() {
   }
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div>
       <button onClick={handleDash}>dashboard</button>
       <button onClick={handleProyects}>proyectos</button>
       <button onClick={handleUsers}>usuarios</button>

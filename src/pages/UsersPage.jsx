@@ -1,7 +1,7 @@
 
 function UsersPage() {
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div >
             Soy el usuario
         </div>
     );
