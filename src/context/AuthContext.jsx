@@ -2,7 +2,8 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from 'react'
 import { createContext, useContext, useState } from "react";
-import { loginRequest, getNotification, getTodos } from "../api/auth";
+import { loginRequest, getNotification, getTodos, getDashCards, getReports } from "../api/auth";
+import { getWeatherByCity } from '../api/weather';
 
 export const AuthContext = createContext()
 
@@ -20,13 +21,17 @@ export const AuthProvider = ({ children }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [notification, setNotification] = useState(null);
     const [todos, setTodos] = useState(null);
+    const [weather, setWeather] = useState(null);
+    const [dashCards, setDashCards] = useState(null)
+    const [reports, setReports] = useState(null)
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (token) {
-            const user = JSON.parse(localStorage.getItem("user"));
+            const user = JSON.parse(localStorage.getItem('user'));
             if (user) {
                 setUser(user);
+                fetchWeather(user.city);
             }
             setIsAuthenticated(true);
         }
@@ -49,6 +54,16 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.log(error.message);
             setErrorMessage("Hubo un error al iniciar sesión");
+        }
+    };
+
+
+    const fetchWeather = async (city) => {
+        try {
+            const response = await getWeatherByCity(city);
+            setWeather(response.data.list[0]);
+        } catch (error) {
+            console.error('Error fetching weather data', error);
         }
     };
 
@@ -92,8 +107,37 @@ export const AuthProvider = ({ children }) => {
         fetchTodosData();
     }, []);
 
+    useEffect(() => {
+        const fetchDashCards = async () => {
+            try {
+                const dashCardsData = await getDashCards();
+
+                setDashCards(dashCardsData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchDashCards();
+    }, []);
+
+    useEffect(() => {
+        const fetchReports = async () => {
+            try {
+                const reportsData = await getReports();
+
+                setReports(reportsData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchReports();
+    }, []);
+
+
     return (
-        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage, logout, notification, todos }}>
+        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage, logout, notification, todos, weather, fetchWeather, dashCards, reports }}>
             {children}
         </AuthContext.Provider>
     )

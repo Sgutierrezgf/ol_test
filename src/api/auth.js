@@ -9,3 +9,9 @@ export const getNotification = () =>
 
 export const getTodos = () =>
     axios.get(`${API}/todos`);
+
+export const getDashCards = () =>
+    axios.get(`${API}/dashboard_cards`);
+
+export const getReports = () =>
+    axios.get(`${API}/cpu_report`);

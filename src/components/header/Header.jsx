@@ -4,6 +4,7 @@ import { CiBellOn } from "react-icons/ci";
 import { MdOutlinePending } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { ModalNotification, ModalAccount, ModalPendings } from '../modals/Modals'
+import './Header.css'
 
 
 const Header = ({ user, toggleMenu }) => {

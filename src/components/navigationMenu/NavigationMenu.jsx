@@ -22,7 +22,7 @@ const NavigationMenu = () => {
 
 
     return (
-        <div>
+        <div className='app-container'>
             <Header user={user} toggleMenu={toggleMenu} /> {/* Usa el componente Header */}
             <div className='content'>
                 <div className="main-content">
@@ -35,10 +35,13 @@ const NavigationMenu = () => {
                         </ul>
                     </nav>
                 </div>
-                <div>
+                <div className='main'>
                     <Outlet />
                 </div>
             </div>
+            <footer className="footer">
+                <p>© 2024 Your Company. All rights reserved.</p>
+            </footer>
         </div>
     );
 }
