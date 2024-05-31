@@ -15,3 +15,9 @@ export const getDashCards = () =>
 
 export const getReports = () =>
     axios.get(`${API}/cpu_report`);
+
+export const getCommits = () =>
+    axios.get(`${API}/report_commits`);
+
+export const getRelease = () =>
+    axios.get(`${API}/release_resume`);

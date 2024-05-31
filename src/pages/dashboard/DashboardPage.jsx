@@ -1,26 +1,43 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable react/no-unescaped-entities */
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Chart from 'chart.js/auto';
-import './dashboard.css'
-
-
-
+import './dashboard.css';
 
 function DashboardPage() {
     const [backgroundImage, setBackgroundImage] = useState('');
-    const {
-        user, weather, dashCards, reports
-    } = useAuth();
+    const { user, weather, dashCards, reports, commits, release } = useAuth();
+    const chartRef = useRef(null);
+    const barChartRef = useRef(null);
+    const doughnutChartRef = useRef(null);
+    const barColors = ['#8A2BE2', '#FFFF00', '#FF0000', '#0000FF', '#9400D3', '#FFA500'];
+
     useEffect(() => {
         if (weather) {
             updateBackgroundImage(weather.weather[0].main);
         }
     }, [weather]);
 
-    console.log(reports);
+    useEffect(() => {
+        if (commits) {
+            renderBarChart(commits);
+        }
+    }, [commits]);
+
+    useEffect(() => {
+        if (reports) {
+            renderChart(reports);
+        }
+    }, [reports]);
+
+    useEffect(() => {
+        if (release) {
+            renderDoughnutChart(release.nc_state);
+        }
+    }, [release]);
+
     function renderChart(reports) {
-        const ctx = document.getElementById('lineChart');
-        // Destruir gráfico anterior si existe
+        const ctx = chartRef.current.getContext('2d');
         if (window.myLineChart) {
             window.myLineChart.destroy();
         }
@@ -37,6 +54,8 @@ function DashboardPage() {
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true
@@ -45,6 +64,76 @@ function DashboardPage() {
             }
         });
     }
+
+    const renderBarChart = (commits) => {
+        const ctx = barChartRef.current.getContext('2d');
+        if (window.myBarChart) {
+            window.myBarChart.destroy();
+        }
+        window.myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: commits.map(commit => `Mes ${commit.month}`),
+                datasets: [
+                    {
+                        label: 'Features',
+                        data: commits.map(commit => commit.feat),
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Fixes',
+                        data: commits.map(commit => commit.fix),
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    };
+
+    const renderDoughnutChart = (nc_state) => {
+        const ctx = doughnutChartRef.current.getContext('2d');
+        if (window.myDoughnutChart) {
+            window.myDoughnutChart.destroy();
+        }
+        window.myDoughnutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    label: 'NC State',
+                    data: [nc_state.detected, nc_state.process, nc_state.solved],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    };
+
     const updateBackgroundImage = (weatherMain) => {
         let imageUrl = '';
         switch (weatherMain) {
@@ -66,11 +155,6 @@ function DashboardPage() {
         setBackgroundImage(imageUrl);
     };
 
-    useEffect(() => {
-        if (reports) {
-            renderChart(reports);
-        }
-    }, [reports]);
     return (
         <div className="dashboard-container">
             <p>Bienvenido {user.name}</p>
@@ -111,11 +195,90 @@ function DashboardPage() {
                         <p>Ultimo error hace 2 horas</p>
                     </div>
                 </div>
-                <div className="grid-item">
-                    <canvas id="lineChart"></canvas>
+                <div className="grid-item-proyect grid-item-chart">
+                    <div className="server-details">
+                        <p>Detalles del servidor</p>
+                        <p>El número total de sesiones dentro del rango de fechas. es el período en el que un usuario interactúa activamente con su sitio web. página por aplicación. etc.</p>
+                    </div>
+                    <div className="chart-info">
+                        <div>
+                            <p>Tiempo de uso</p>
+                            <p className='reports'>{reports && reports.percentaje_time}%</p>
+                        </div>
+                        <div>
+                            <p>Proyectos desplegados</p>
+                            <p className='reports'>{reports && reports.deploys}</p>
+                        </div>
+                    </div>
+                    <div className="chart-container">
+                        <canvas ref={chartRef} id="lineChart"></canvas>
+                    </div>
                 </div>
-                <div className="grid-item">Detalles</div>
-                <div className="grid-item grid-item-full">Entregas</div>
+                <div className="grid-item-commits">
+                    <div className='commits-info'>
+                        <p>Reporte de commits</p>
+                        <p>Total de commits realizados por cada mes diferenciado entre los tag de ajustes(fix) y caracteristicas(features)</p>
+                    </div>
+                    <div className='chart-commits'>
+                        <canvas ref={barChartRef} id="barChart"></canvas>
+                    </div>
+                </div>
+                <div className="grid-item grid-item-full">
+                    <div className="flex-container">
+                        <div className='info-release'>
+                            <p>Entregas</p>
+                            <p>{release.porcentaje}%</p>
+                            <p>Proximo ciclo: {release.cicle}</p>
+                            <p>El ciclo de entre se calcula usando las fechas estimadas de los sprints en cada proyecto</p>
+                        </div>
+                        <div className="top-projects">
+                            {release?.top_projects.map((project, index) => (
+                                <div key={index} className="project">
+                                    <div className="project-details">
+                                        <p className="project-name">{project.name}</p>
+                                        <div className="progress-bar">
+                                            <div className="progress" style={{ width: `${project.porcentaje}%`, backgroundColor: barColors[index] }}>
+                                                {project.porcentaje}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="project-status">
+                                        <span>{project.is_nc}</span>
+                                        <span>{project.is_delay}</span>
+                                        <span>{project.is_deliver}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="doughnut-chart-container">
+                            <div className="chart-wrapper">
+                                <canvas ref={doughnutChartRef} id="doughnutChart" style={{ height: '200px' }}></canvas>
+                            </div>
+                            <div className="chart-release">
+                                <div className="legend">
+                                    <div className="legend-item">
+                                        <span className="legend-color" style={{ backgroundColor: 'rgba(255, 99, 132, 0.2)' }}></span>
+                                        <span className="legend-label">Detectados</span>
+                                    </div>
+                                    <div className="legend-item">
+                                        <span className="legend-color" style={{ backgroundColor: 'rgba(54, 162, 235, 0.2)' }}></span>
+                                        <span className="legend-label">En proceso</span>
+                                    </div>
+                                    <div className="legend-item">
+                                        <span className="legend-color" style={{ backgroundColor: 'rgba(75, 192, 192, 0.2)' }}></span>
+                                        <span className="legend-label">Resueltos</span>
+                                    </div>
+                                </div>
+                                <div className="values">
+                                    <p>{release.nc_state.detected}</p>
+                                    <p>{release.nc_state.process}</p>
+                                    <p>{release.nc_state.solved}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );

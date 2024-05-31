@@ -42,9 +42,9 @@
 }
 
 .grid-item {
-    background-color: #f0f0f0;
+    background-color: #fff;
     padding: 20px;
-    height: 250px;
+    /* height: 250px; */
     border-radius: 15px;
     text-align: center;
 }
@@ -55,7 +55,6 @@
 
 .grid-item-projects {
     display: grid;
-
     background-color: transparent;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
@@ -78,4 +77,222 @@
 
 .grid-item-projects div p {
     margin: 5px 0;
+}
+
+.grid-item-chart .server-details,
+.grid-item-chart .chart-info {
+    text-align: left;
+    margin: 10px;
+}
+
+.grid-item-chart .chart-info {
+    display: flex;
+}
+
+.grid-item-chart .chart-info {
+    display: flex;
+}
+
+
+.grid-item-proyect {
+    height: 300px;
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    /* Ajusta esta altura según necesites */
+}
+
+.server-details :nth-child(1) {
+    font-size: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.server-details :nth-child(2) {
+    font-size: 12px;
+}
+
+.chart-info div {
+    margin-right: 5px;
+}
+
+.reports {
+    color: #4946b0;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.grid-item-commits {
+    height: 300px;
+    background-color: #fff;
+    border-radius: 15px;
+}
+
+.chart-commits {
+    position: relative;
+    width: 100%;
+    height: 240px;
+}
+
+.commits-info {
+    margin: 5px;
+}
+
+.commits-info :nth-child(1) {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.commits-info :nth-child(2) {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.project {
+    margin-bottom: 20px;
+    /* Incrementa el espacio entre proyectos */
+}
+
+.project-details {
+    display: flex;
+    align-items: center;
+}
+
+.project-name {
+    margin-right: 10px;
+    /* Espacio entre el nombre del proyecto y la barra de progreso */
+    font-weight: bold;
+    /* Añade negrita al nombre del proyecto */
+    width: 120px;
+    /* Ancho máximo para el nombre del proyecto */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.info-release {
+    text-align: left;
+    font-size: 15px;
+}
+
+.info-release p {
+    margin-bottom: 5px;
+}
+
+
+.info-release :nth-child(1) {
+    font-weight: bold;
+}
+
+.info-release :nth-child(2) {
+    font-weight: bold;
+    font-size: 25px;
+    color: #4946b0;
+}
+
+.info-release :nth-child(3) {
+    font-weight: bold;
+    font-size: 20px;
+    color: #4946b0;
+}
+
+.info-release :nth-child(4) {
+    font-size: 12px;
+}
+
+.progress-bar {
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 5px;
+    width: 550px;
+    /* Ancho de la barra de progreso */
+}
+
+.progress {
+    background-color: #76c7c0;
+    height: 20px;
+    text-align: right;
+    padding-right: 5px;
+    color: white;
+    border-radius: 0 5px 5px 0;
+}
+
+.project-status {
+    margin-top: 5px;
+    /* Espacio entre la barra de progreso y el estado del proyecto */
+}
+
+.flex-container {
+    display: flex;
+    align-items: flex-start;
+    /* Alinea los elementos al principio */
+    justify-content: space-between;
+}
+
+.info-release {
+    flex: 2;
+}
+
+.top-projects {
+    flex: 3;
+    border-right: 1px solid black;
+}
+
+.doughnut-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+}
+
+.chart-release {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 300px;
+    margin-top: 20px;
+    padding: 20px;
+    /* Ajusta el margen superior según sea necesario */
+}
+
+.legend {
+    flex: 1;
+}
+
+.values {
+    flex: 1;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    /* Espacio entre los elementos de la leyenda */
+}
+
+.legend-color {
+    width: 20px;
+    /* Ancho del cuadrado de color */
+    height: 20px;
+    /* Alto del cuadrado de color */
+    margin-right: 5px;
+    /* Espacio entre el cuadrado de color y el texto */
+}
+
+.values p {
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: flex-end;
 }

@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from 'react'
 import { createContext, useContext, useState } from "react";
-import { loginRequest, getNotification, getTodos, getDashCards, getReports } from "../api/auth";
+import { loginRequest, getNotification, getTodos, getDashCards, getReports, getCommits, getRelease } from "../api/auth";
 import { getWeatherByCity } from '../api/weather';
 
 export const AuthContext = createContext()
@@ -24,6 +24,8 @@ export const AuthProvider = ({ children }) => {
     const [weather, setWeather] = useState(null);
     const [dashCards, setDashCards] = useState(null)
     const [reports, setReports] = useState(null)
+    const [commits, setCommits] = useState(null)
+    const [release, setRelease] = useState(null)
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -135,9 +137,39 @@ export const AuthProvider = ({ children }) => {
         fetchReports();
     }, []);
 
+    useEffect(() => {
+        const fetchCommits = async () => {
+            try {
+                const commitsData = await getCommits();
+
+                setCommits(commitsData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchCommits();
+    }, []);
+
+    useEffect(() => {
+        const fetchRelease = async () => {
+            try {
+                const releaseData = await getRelease();
+
+                setRelease(releaseData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchRelease();
+    }, []);
+
+
+
 
     return (
-        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage, logout, notification, todos, weather, fetchWeather, dashCards, reports }}>
+        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage, logout, notification, todos, weather, fetchWeather, dashCards, reports, commits, release }}>
             {children}
         </AuthContext.Provider>
     )
