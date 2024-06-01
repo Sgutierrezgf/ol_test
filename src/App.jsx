@@ -5,9 +5,9 @@ import LoginPage from './pages/LoginPage';
 import { AuthProvider } from './context/AuthContext';
 // import HomePage from './pages/HomePage';
 import DashboardPage from './pages/dashboard/DashboardPage'
-import ProyectsPage from './pages/ProyectsPage';
+import ProyectsPage from './pages/projects/ProyectsPage';
 import RolesPage from './pages/RolesPage';
-import UsersPage from './pages/UsersPage';
+import UsersPage from './pages/users/UsersPage';
 import ProtectedRoute from './ProtectedRoute'
 import Layout from './layout/Layout';
 

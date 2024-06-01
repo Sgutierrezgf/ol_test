@@ -1,0 +1,99 @@
+.project-container {
+    background-color: white;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.project-title p {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.button-container {
+    text-align: right;
+    margin-top: 5px;
+}
+
+.table-container {
+    margin-top: 10px;
+    overflow-x: auto;
+    height: 75vh;
+    overflow: hidden;
+    scrollbar-width: thin;
+    /* Para navegadores que soportan la propiedad scrollbar-width */
+    scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.1);
+    /* Color del scrollbar thumb y track */
+
+}
+
+.table-container:hover {
+    overflow: auto;
+    /* Muestra los scrolls al hacer hover */
+}
+
+/* Estilos del scrollbar */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    /* Ancho del scrollbar */
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Color del thumb */
+    border-radius: 4px;
+    /* Borde redondeado del thumb */
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Color del thumb al hacer hover */
+}
+
+.table-container::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1);
+    /* Color del track */
+}
+
+.projects-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.projects-table th,
+.projects-table td {
+    border: none;
+    /* Eliminar bordes */
+    padding: 12px;
+    text-align: left;
+    text-align: center;
+}
+
+
+.projects-table tr:hover {
+    background-color: #ddd;
+}
+
+/* Agregar línea horizontal entre filas */
+.projects-table tbody tr:not(:last-child) {
+    border-bottom: 1px solid #ddd;
+}
+
+.checkmark {
+    color: green;
+    font-weight: bold;
+}
+
+.crossmark {
+    color: red;
+    font-weight: bold;
+}
+
+.icon-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.icon-container>* {
+    margin-right: 10px;
+}

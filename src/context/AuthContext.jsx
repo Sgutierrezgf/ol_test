@@ -2,8 +2,21 @@
 /* eslint-disable react/prop-types */
 import { useEffect } from 'react'
 import { createContext, useContext, useState } from "react";
-import { loginRequest, getNotification, getTodos, getDashCards, getReports, getCommits, getRelease } from "../api/auth";
+import {
+    loginRequest,
+    getNotification,
+    getTodos,
+    getDashCards,
+    getReports,
+    getCommits,
+    getRelease,
+    getProjects,
+    addRProjects,
+    deleteProject,
+    getUsers
+} from "../api/auth";
 import { getWeatherByCity } from '../api/weather';
+
 
 export const AuthContext = createContext()
 
@@ -26,6 +39,8 @@ export const AuthProvider = ({ children }) => {
     const [reports, setReports] = useState(null)
     const [commits, setCommits] = useState(null)
     const [release, setRelease] = useState(null)
+    const [projects, setProjects] = useState(null)
+    const [users, setUsers] = useState(null)
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -165,11 +180,80 @@ export const AuthProvider = ({ children }) => {
         fetchRelease();
     }, []);
 
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const projectsData = await getProjects();
+
+                setProjects(projectsData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchProjects();
+    }, []);
 
 
+    const addProject = async (projectos) => {
+        try {
+            const res = await addRProjects(projectos);
+            setProjects(res.data);
+            setIsAuthenticated(true);
+            setProjects([...projects, res.data]);
+            console.log(projects);
+        } catch (error) {
+            setErrorMessage('No se Pudo cargar el projecto');
+        }
+    };
+
+    const deleteProjects = async (id) => {
+        try {
+            const res = await deleteProject(id);
+            if (res.status === 204) {
+                setProjects(projects.filter((pro) => pro.id !== id));
+            } else {
+                console.error("Error al eliminar proyecto:", res.status);
+            }
+        } catch (error) {
+            console.error("Error al eliminar proyecto:", error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const usersData = await getUsers();
+
+                setUsers(usersData.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     return (
-        <AuthContext.Provider value={{ signin, user, isAuthenticated, errorMessage, logout, notification, todos, weather, fetchWeather, dashCards, reports, commits, release }}>
+        <AuthContext.Provider value={{
+            signin,
+            user,
+            isAuthenticated,
+            errorMessage,
+            logout,
+            notification,
+            todos,
+            weather,
+            fetchWeather,
+            dashCards,
+            reports,
+            commits,
+            release,
+            projects,
+            addProject,
+            deleteProjects,
+            users
+        }}>
             {children}
         </AuthContext.Provider>
     )
