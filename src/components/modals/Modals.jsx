@@ -188,6 +188,7 @@ function ModalAddProject({ onClose }) {
                             )}
                         />
                         {errors.developers && <p className="error-message">Los desarrolladores son requeridos</p>}
+
                         <h3>Integración Continua</h3>
                         <div className="checkbox-container">
                             <label htmlFor="ci">Tiene Integración Continua</label>
