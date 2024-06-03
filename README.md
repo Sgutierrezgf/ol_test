@@ -2,7 +2,8 @@ Prueba Tecnica - OL Software S.A
 
 Descripción:
 
-La Aplicación es un gestor de proyectos que permite a los usuarios administrar proyectos, asignar tareas, mantener un seguimiento del progreso y gestionar usuarios. Proporciona funcionalidades como autenticación de usuarios, visualización de datos meteorológicos, gestión de proyectos y usuarios, entre otras.
+La Aplicación es un gestor de proyectos que permite a los usuarios administrar proyectos, asignar tareas, mantener un seguimiento del progreso y gestionar usuarios. 
+Proporciona funcionalidades como autenticación de usuarios, visualización de datos meteorológicos, gestión de proyectos y usuarios, entre otras.
 
 Funcionalidades Principales:
 
@@ -20,7 +21,7 @@ Tecnologías Utilizadas:
 
 Instalación:
 
-* Clona el repositorio desde GitHub: git clone https://github.com/tu_usuario/tu_repositorio.git.
+* Clona el repositorio desde GitHub: git clone https://github.com/Sgutierrezgf/ol_test.git.
 * Ve al directorio del proyecto: cd nombre_del_proyecto.
 * Instala las dependencias: npm install.
 * Corre en una segunda terminal el archivo db.json: json-server ./db/db.json.
