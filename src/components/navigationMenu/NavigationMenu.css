@@ -88,3 +88,8 @@ nav.collapsed ul li a .arrow-icon {
     justify-content: space-between;
     margin: 0 5px 0 5px;
 }
+
+nav ul li.active a {
+    background-color: blue;
+    color: white;
+}
