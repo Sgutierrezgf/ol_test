@@ -19,8 +19,8 @@ Instalación
     Clona el repositorio desde GitHub: git clone https://github.com/tu_usuario/tu_repositorio.git
     Ve al directorio del proyecto: cd nombre_del_proyecto
     Instala las dependencias: npm install
-    Configura las variables de entorno (por ejemplo, la URL de la API).
-    Inicia la aplicación: npm start
+    Corre en una segunda terminal el archivo db.json: json-server ./db/db.json
+    Inicia la aplicación: npm run dev
 
 Uso
     Regístrate e inicia sesión en la aplicación.
