@@ -1,20 +1,44 @@
 /* eslint-disable react/jsx-key */
 import { useState } from 'react';
-import Button from '../../components/botones/Button'
-import './projects.css'
+import Button from '../../components/botones/Button';
+import './projects.css';
 import { useAuth } from '../../context/AuthContext';
-import { MdModeEdit, MdDelete } from "react-icons/md"
-import { ModalAddProject } from '../../components/modals/Modals';
+import { MdModeEdit, MdDelete } from "react-icons/md";
+import { ModalAddProject, ModalUpdateProject } from '../../components/modals/Modals';
 
 function ProyectsPage() {
-    const [showModalProject, setShowModalProject] = useState(false)
-
-    const { projects, deleteProjects } = useAuth()
+    const [showModalProject, setShowModalProject] = useState(false);
+    const [selectedProjectId, setSelectedProjectId] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const { projects, deleteProjects, hasPermission } = useAuth();
 
     const handleAddProject = () => {
+        if (!hasPermission('create')) {
+            setErrorMessage('No tienes permisos para agregar un proyecto');
+            return;
+        }
+        setErrorMessage('');
         setShowModalProject(!showModalProject);
-        // Cerrar otros modales al abrir el de campana
     };
+
+    const handleEditProject = (projectId) => {
+        if (!hasPermission('update')) {
+            setErrorMessage('No tienes permisos para editar este proyecto');
+            return;
+        }
+        setErrorMessage('');
+        setSelectedProjectId(projectId);
+    };
+
+    const handleDeleteProject = (projectId) => {
+        if (!hasPermission('delete')) {
+            setErrorMessage('No tienes permisos para eliminar este proyecto');
+            return;
+        }
+        setErrorMessage('');
+        deleteProjects(projectId);
+    };
+
     return (
         <div className="project-container">
             <div className='project-title'>
@@ -22,8 +46,15 @@ function ProyectsPage() {
                 <div className='button-container'>
                     <Button onClick={handleAddProject}>Nuevo Proyecto</Button>
                 </div>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 {showModalProject && (
                     <ModalAddProject onClose={handleAddProject} />
+                )}
+                {selectedProjectId && (
+                    <ModalUpdateProject
+                        project={projects.find(project => project.id === selectedProjectId)} // Pasar el proyecto seleccionado como prop
+                        onClose={() => setSelectedProjectId(null)}
+                    />
                 )}
             </div>
             <div className='table-container'>
@@ -78,8 +109,8 @@ function ProyectsPage() {
                                 <td><p style={{ backgroundColor: 'yellow', borderRadius: '15px', fontSize: '12px', width: '90px', height: '20px', placeContent: 'center' }}>{project.status}</p></td>
                                 <td>
                                     <div className="icon-container">
-                                        <MdModeEdit size='1.5rem' />
-                                        <MdDelete onClick={() => { deleteProjects(project.id) }} size='1.5rem' />
+                                        <MdModeEdit size='1.5rem' onClick={() => handleEditProject(project.id)} />
+                                        <MdDelete onClick={() => handleDeleteProject(project.id)} size='1.5rem' />
                                     </div>
                                 </td>
                             </tr>

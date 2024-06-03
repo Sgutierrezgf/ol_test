@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API = "http://localhost:3000";
+
 export const loginRequest = (user) =>
     axios.get(`${API}/login?user=${user.user}&password=${user.password}`);
 
@@ -27,13 +28,19 @@ export const getProjects = () =>
 
 export const addRProjects = (project) => axios.post(`${API}/projects`, project);
 
+export const updateProject = async (id, updatedProjectData) =>
+    axios.put(`${API}/projects/${id}`, updatedProjectData);
+
 export const deleteProject = async (id) =>
-    axios.delete(`${API}/projects/${id}`, id);
+    axios.delete(`${API}/projects/${id}`);
 
 export const getUsers = () =>
     axios.get(`${API}/users`);
 
 export const addUser = (user) => axios.post(`${API}/users`, user);
 
+export const updateUsers = async (id, updatedUserData) =>
+    axios.put(`${API}/users/${id}`, updatedUserData);
+
 export const deleteUser = async (id) =>
-    axios.delete(`${API}/users/${id}`, id);
+    axios.delete(`${API}/users/${id}`);

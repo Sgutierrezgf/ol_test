@@ -1,46 +1,33 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
-import { useEffect } from 'react'
-import { createContext, useContext, useState } from "react";
-import {
-    loginRequest,
-    getNotification,
-    getTodos,
-    getDashCards,
-    getReports,
-    getCommits,
-    getRelease,
-    getProjects,
-    addRProjects,
-    deleteProject,
-    getUsers
-} from "../api/auth";
+import { useEffect, createContext, useContext, useState, useCallback } from 'react';
+import * as api from '../api/auth';
 import { getWeatherByCity } from '../api/weather';
+import { keysToCamel } from '../middleware/keysTocamel';
 
-
-export const AuthContext = createContext()
+export const AuthContext = createContext();
 
 export const useAuth = () => {
-    const context = useContext(AuthContext)
+    const context = useContext(AuthContext);
     if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider")
+        throw new Error("useAuth must be used within an AuthProvider");
     }
-    return context
-}
+    return context;
+};
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [notification, setNotification] = useState(null);
     const [todos, setTodos] = useState(null);
     const [weather, setWeather] = useState(null);
-    const [dashCards, setDashCards] = useState(null)
-    const [reports, setReports] = useState(null)
-    const [commits, setCommits] = useState(null)
-    const [release, setRelease] = useState(null)
-    const [projects, setProjects] = useState(null)
-    const [users, setUsers] = useState(null)
+    const [dashCards, setDashCards] = useState(null);
+    const [reports, setReports] = useState(null);
+    const [commits, setCommits] = useState(null);
+    const [release, setRelease] = useState(null);
+    const [projects, setProjects] = useState(null);
+    const [users, setUsers] = useState(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -56,182 +43,114 @@ export const AuthProvider = ({ children }) => {
 
     const signin = async (userData) => {
         try {
-            const res = await loginRequest(userData);
+            const res = await api.loginRequest(userData);
             if (res.status === 200 && res.data && res.data.length > 0) {
-                const token = res.data[0].token;
-                const user = res.data[0];
-                setUser(user);
+                const responseData = keysToCamel(res.data[0]);
+                const token = responseData.token;
+                setUser(responseData);
                 setIsAuthenticated(true);
                 setErrorMessage("");
                 localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("user", JSON.stringify(responseData));
             } else {
                 setErrorMessage("Usuario no existe");
             }
         } catch (error) {
-            console.log(error.message);
+            console.error(error.message);
             setErrorMessage("Hubo un error al iniciar sesión");
         }
     };
 
-
-    const fetchWeather = async (city) => {
+    const fetchWeather = useCallback(async (city) => {
         try {
             const response = await getWeatherByCity(city);
             setWeather(response.data.list[0]);
         } catch (error) {
             console.error('Error fetching weather data', error);
         }
-    };
+    }, []);
 
     const logout = () => {
-
-        // Limpiar el localStorage
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-
-        // Limpiar el estado del usuario y la autenticación
         setUser(null);
         setIsAuthenticated(false);
     };
 
+    const hasPermission = useCallback((action) => {
+        if (!user) return false;
+        if (user.user === 'admin') return true;
+        if (user.user === 'dev' && action === 'read') return true;
+        return false;
+    }, [user]);
 
-    useEffect(() => {
-        const fetchNotificationData = async () => {
-            try {
-                const employeesData = await getNotification();
-
-                setNotification(employeesData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchNotificationData();
-    }, []);
-
-    useEffect(() => {
-        const fetchTodosData = async () => {
-            try {
-                const todosData = await getTodos();
-
-                setTodos(todosData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchTodosData();
-    }, []);
-
-    useEffect(() => {
-        const fetchDashCards = async () => {
-            try {
-                const dashCardsData = await getDashCards();
-
-                setDashCards(dashCardsData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchDashCards();
-    }, []);
-
-    useEffect(() => {
-        const fetchReports = async () => {
-            try {
-                const reportsData = await getReports();
-
-                setReports(reportsData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchReports();
-    }, []);
-
-    useEffect(() => {
-        const fetchCommits = async () => {
-            try {
-                const commitsData = await getCommits();
-
-                setCommits(commitsData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchCommits();
-    }, []);
-
-    useEffect(() => {
-        const fetchRelease = async () => {
-            try {
-                const releaseData = await getRelease();
-
-                setRelease(releaseData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchRelease();
-    }, []);
-
-    useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const projectsData = await getProjects();
-
-                setProjects(projectsData.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchProjects();
-    }, []);
-
-
-    const addProject = async (projectos) => {
-        try {
-            const res = await addRProjects(projectos);
-            setProjects(res.data);
-            setIsAuthenticated(true);
-            setProjects([...projects, res.data]);
-            console.log(projects);
-        } catch (error) {
-            setErrorMessage('No se Pudo cargar el projecto');
+    const handleApiAction = async (action, apiCall, data) => {
+        if (!hasPermission(action)) {
+            setErrorMessage(`No tienes permiso para ${action} ${data.type}`);
+            return;
         }
+        try {
+            const res = await apiCall(data.payload);
+            if (res.status === 200 || res.status === 201) {
+                return res.data;
+            } else {
+                setErrorMessage(`Error al ${action} ${data.type}`);
+                console.error(`Error al ${action} ${data.type}:`, res.status);
+            }
+        } catch (error) {
+            setErrorMessage(`Error al ${action} ${data.type}`);
+            console.error(`Error al ${action} ${data.type}:`, error);
+        }
+    };
+
+    const addProject = async (project) => {
+        const newProject = await handleApiAction('create', api.addRProjects, { type: 'proyecto', payload: project });
+        if (newProject) setProjects([...projects, newProject]);
     };
 
     const deleteProjects = async (id) => {
-        try {
-            const res = await deleteProject(id);
-            if (res.status === 204) {
-                setProjects(projects.filter((pro) => pro.id !== id));
-            } else {
-                console.error("Error al eliminar proyecto:", res.status);
-            }
-        } catch (error) {
-            console.error("Error al eliminar proyecto:", error);
-        }
+        const success = await handleApiAction('delete', api.deleteProject, { type: 'proyecto', payload: id });
+        if (success) setProjects(projects.filter((pro) => pro.id !== id));
+    };
+
+    const updateProjects = async (id, updatedProjectData) => {
+        const updatedProject = await handleApiAction('update', api.updateProject, { type: 'proyecto', payload: { id, ...updatedProjectData } });
+        if (updatedProject) setProjects(projects.map((pro) => pro.id === id ? updatedProject : pro));
+    };
+
+    const addUsers = async (user) => {
+        const newUser = await handleApiAction('create', api.addUser, { type: 'usuario', payload: user });
+        if (newUser) setUsers([...users, newUser]);
+    };
+
+    const updateUser = async (id, updatedUserData) => {
+        const updatedUser = await handleApiAction('update', api.updateUsers, { type: 'usuario', payload: { id, ...updatedUserData } });
+        if (updatedUser) setUsers(users.map((usr) => usr.id === id ? updatedUser : usr));
+    };
+
+    const deleteUsers = async (id) => {
+        const success = await handleApiAction('delete', api.deleteUser, { type: 'usuario', payload: id });
+        if (success) setUsers(users.filter((user) => user.id !== id));
     };
 
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchData = async (apiCall, setState) => {
             try {
-                const usersData = await getUsers();
-
-                setUsers(usersData.data);
+                const response = await apiCall();
+                setState(response.data);
             } catch (error) {
                 console.error(error);
             }
         };
 
-        fetchUsers();
+        fetchData(api.getNotification, setNotification);
+        fetchData(api.getTodos, setTodos);
+        fetchData(api.getDashCards, setDashCards);
+        fetchData(api.getReports, setReports);
+        fetchData(api.getCommits, setCommits);
+        fetchData(api.getRelease, setRelease);
+        fetchData(api.getProjects, setProjects);
+        fetchData(api.getUsers, setUsers);
     }, []);
 
     return (
@@ -252,9 +171,14 @@ export const AuthProvider = ({ children }) => {
             projects,
             addProject,
             deleteProjects,
-            users
+            users,
+            updateProjects,
+            addUsers,
+            updateUser,
+            deleteUsers,
+            hasPermission
         }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
