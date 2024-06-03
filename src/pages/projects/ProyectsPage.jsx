@@ -13,31 +13,40 @@ function ProyectsPage() {
     const { projects, deleteProjects, hasPermission } = useAuth();
 
     const handleAddProject = () => {
+        // Verificación de permisos
         if (!hasPermission('create')) {
             setErrorMessage('No tienes permisos para agregar un proyecto');
             return;
         }
+        // Limpieza de mensaje de error y cambio de estado para mostrar/ocultar modal
         setErrorMessage('');
         setShowModalProject(!showModalProject);
     };
 
+    // Función para manejar la edición de un proyecto
     const handleEditProject = (projectId) => {
+        // Verificación de permisos
         if (!hasPermission('update')) {
             setErrorMessage('No tienes permisos para editar este proyecto');
             return;
         }
+        // Limpieza de mensaje de error y selección del proyecto para edición
         setErrorMessage('');
         setSelectedProjectId(projectId);
     };
 
+    // Función para manejar la eliminación de un proyecto
     const handleDeleteProject = (projectId) => {
+        // Verificación de permisos
         if (!hasPermission('delete')) {
             setErrorMessage('No tienes permisos para eliminar este proyecto');
             return;
         }
+        // Limpieza de mensaje de error y eliminación del proyecto
         setErrorMessage('');
         deleteProjects(projectId);
     };
+
 
     return (
         <div className="project-container">
@@ -52,7 +61,7 @@ function ProyectsPage() {
                 )}
                 {selectedProjectId && (
                     <ModalUpdateProject
-                        project={projects.find(project => project.id === selectedProjectId)} // Pasar el proyecto seleccionado como prop
+                        project={projects.find(project => project.id === selectedProjectId)}
                         onClose={() => setSelectedProjectId(null)}
                     />
                 )}

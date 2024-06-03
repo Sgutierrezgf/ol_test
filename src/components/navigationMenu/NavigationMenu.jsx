@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { Suspense, lazy, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { RxDashboard } from "react-icons/rx";
 import { MdOutlineSpaceDashboard, MdControlCamera } from "react-icons/md";
@@ -7,8 +7,10 @@ import { FaRegUser } from "react-icons/fa";
 import './NavigationMenu.css';
 import { useAuth } from '../../context/AuthContext';
 import { Outlet } from 'react-router-dom';
-import Header from '../header/Header'; // Importa el componente Header
 
+
+
+const Header = lazy(() => import('../header/Header'));
 const NavigationMenu = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const { user } = useAuth();
@@ -20,7 +22,6 @@ const NavigationMenu = () => {
     };
 
     useEffect(() => {
-        // Redirige al usuario al dashboard después de iniciar sesión o refrescar la página
         if (user && location.pathname === '/home') {
             navigate('/home/dashboard');
         }
@@ -28,7 +29,9 @@ const NavigationMenu = () => {
 
     return (
         <div className='app-container'>
-            <Header user={user} toggleMenu={toggleMenu} /> {/* Usa el componente Header */}
+            <Suspense fallback={<div>Loading...</div>}>
+                <Header user={user} toggleMenu={toggleMenu} />
+            </Suspense>
             <div className='content'>
                 <div className="main-content">
                     <nav className={isCollapsed ? 'collapsed' : ''}>
@@ -45,7 +48,8 @@ const NavigationMenu = () => {
                 </div>
             </div>
             <footer className="footer">
-                <p>© 2024 Your Company. All rights reserved.</p>
+                <p>Copyright© 2024 OL Software S.A. prueba frontend.</p>
+                <p>React</p>
             </footer>
         </div>
     );

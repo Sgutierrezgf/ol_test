@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import Button from '../../components/botones/Button';
-import './users.css';
 import { useAuth } from '../../context/AuthContext';
 import { MdModeEdit, MdDelete } from "react-icons/md";
 import { ModalAddUser, ModalUpdateUser } from '../../components/modals/Modals';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import './users.css';
 
 function UsersPage() {
     const [showModaluser, setShowModaluser] = useState(false);
@@ -11,33 +12,41 @@ function UsersPage() {
     const [errorMessage, setErrorMessage] = useState('');
     const { users, deleteUsers, hasPermission } = useAuth();
 
+    // Función para mostrar el modal de añadir usuario
     const handleAddUser = () => {
+        // Verificación de permisos
         if (!hasPermission('create')) {
             setErrorMessage('No tienes permisos para agregar un usuario');
             return;
         }
+        // Limpieza de mensaje de error y cambio de estado para mostrar/ocultar modal
         setErrorMessage('');
         setShowModaluser(!showModaluser);
     };
 
+    // Función para manejar la edición de un usuario
     const handleEditUser = (userId) => {
+        // Verificación de permisos
         if (!hasPermission('update')) {
             setErrorMessage('No tienes permisos para editar este usuario');
             return;
         }
+        // Limpieza de mensaje de error y selección del usuario para edición
         setErrorMessage('');
         setSelecteUserId(userId);
     };
 
+    // Función para manejar la eliminación de un usuario
     const handleDeleteUser = (userId) => {
+        // Verificación de permisos
         if (!hasPermission('delete')) {
             setErrorMessage('No tienes permisos para eliminar este usuario');
             return;
         }
+        // Limpieza de mensaje de error y eliminación del usuario
         setErrorMessage('');
         deleteUsers(userId);
     };
-
     return (
         <div className="project-container">
             <div className='project-title'>
@@ -51,7 +60,7 @@ function UsersPage() {
                 )}
                 {selectedUserId && (
                     <ModalUpdateUser
-                        user={users.find(user => user.id === selectedUserId)} // Pasar el usuario seleccionado como prop
+                        user={users.find(user => user.id === selectedUserId)}
                         onClose={() => setSelecteUserId(null)}
                     />
                 )}
@@ -72,7 +81,7 @@ function UsersPage() {
                     <tbody>
                         {users.map(user => (
                             <tr key={user.id}>
-                                <td><img className="user-image" src='https://plus.unsplash.com/premium_photo-1688891564708-9b2247085923?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyZmlsfGVufDB8fDB8fHww' alt={user.name} /></td>
+                                <td><LazyLoadImage className="user-image" src='https://plus.unsplash.com/premium_photo-1688891564708-9b2247085923?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyZmlsfGVufDB8fDB8fHww' alt={user.name} /></td>
                                 <td>{user.name}</td>
                                 <td>{user.last_name}</td>
                                 <td>{user.rol === 1 ? 'admin' : 'dev'}</td>

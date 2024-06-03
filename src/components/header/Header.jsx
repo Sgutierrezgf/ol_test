@@ -4,6 +4,7 @@ import { CiBellOn } from "react-icons/ci";
 import { MdOutlinePending } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { ModalNotification, ModalAccount, ModalPendings } from '../modals/Modals'
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import './Header.css'
 
 
@@ -14,21 +15,18 @@ const Header = ({ user, toggleMenu }) => {
 
     const toggleBellPopup = () => {
         setShowBellPopup(!showBellPopup);
-        // Cerrar otros modales al abrir el de campana
         setShowImagePopup(false);
         setShowPendingPopup(false);
     };
 
     const toggleImagePopup = () => {
         setShowImagePopup(!showImagePopup);
-        // Cerrar otros modales al abrir el de imagen
         setShowBellPopup(false);
         setShowPendingPopup(false);
     };
 
     const togglePendingPopup = () => {
         setShowPendingPopup(!showPendingPopup);
-        // Cerrar otros modales al abrir el de pending
         setShowBellPopup(false);
         setShowImagePopup(false);
     };
@@ -36,7 +34,12 @@ const Header = ({ user, toggleMenu }) => {
     return (
         <header>
             <div className="header-left">
-                <img src='https://olsoftware.com/wp-content/uploads/2021/04/cropped-Logo-Oficial-OL-Software-230x64.png' alt="Logo" className="logo" />
+                <LazyLoadImage
+                    src='https://olsoftware.com/wp-content/uploads/2021/04/cropped-Logo-Oficial-OL-Software-230x64.png'
+                    alt="Logo"
+                    className="logo"
+                    effect="blur"
+                />
                 <RxHamburgerMenu className="hamburger" onClick={toggleMenu} />
             </div>
             <div className="header-right">
@@ -44,7 +47,13 @@ const Header = ({ user, toggleMenu }) => {
                 {showBellPopup && (
                     <ModalNotification onClose={toggleBellPopup} />
                 )}
-                <img src={user.photo} alt="Profile" className="profile-pic" onClick={toggleImagePopup} />
+                <LazyLoadImage
+                    src={user.photo}
+                    alt="Profile"
+                    className="profile-pic"
+                    onClick={toggleImagePopup}
+                    effect="blur"
+                />
                 {showImagePopup && (
                     <ModalAccount onClose={toggleImagePopup} />
                 )}

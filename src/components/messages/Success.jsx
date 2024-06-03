@@ -6,8 +6,7 @@ function Success({ message, onClose }) {
     useEffect(() => {
         const timeout = setTimeout(() => {
             onClose();
-        }, 3000); // Cerrar el popup después de 3 segundos
-
+        }, 3000);
         return () => clearTimeout(timeout);
     }, [onClose]);
 

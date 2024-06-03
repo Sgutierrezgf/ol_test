@@ -36,6 +36,7 @@ function DashboardPage() {
         }
     }, [release]);
 
+    // Renderiza un gráfico de línea
     function renderChart(reports) {
         const ctx = chartRef.current.getContext('2d');
         if (window.myLineChart) {
@@ -64,7 +65,7 @@ function DashboardPage() {
             }
         });
     }
-
+    // Renderiza un gráfico de barras
     const renderBarChart = (commits) => {
         const ctx = barChartRef.current.getContext('2d');
         if (window.myBarChart) {
@@ -102,7 +103,7 @@ function DashboardPage() {
             }
         });
     };
-
+    // Renderiza un gráfico de dona
     const renderDoughnutChart = (nc_state) => {
         const ctx = doughnutChartRef.current.getContext('2d');
         if (window.myDoughnutChart) {
@@ -133,7 +134,7 @@ function DashboardPage() {
             }
         });
     };
-
+    // Actualiza la imagen de fondo según el clima
     const updateBackgroundImage = (weatherMain) => {
         let imageUrl = '';
         switch (weatherMain) {

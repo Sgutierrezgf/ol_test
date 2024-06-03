@@ -298,7 +298,7 @@ function ModalUpdateProject({ project, onClose }) {
                 ...defaultValues,
             };
 
-            await updateProjects(project.id, updatedProjectData); // Utiliza el ID del proyecto existente
+            await updateProjects(project.id, updatedProjectData);
             setLoading(false);
             setShowPopup(true);
             onClose(true);

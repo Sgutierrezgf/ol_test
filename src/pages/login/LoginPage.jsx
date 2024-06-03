@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/botones/Button";
-import './login.css'; // Importar el archivo CSS
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import './login.css';
 
 function LoginPage() {
+    // Importación de hooks y dependencias
     const {
         register,
         handleSubmit,
@@ -17,12 +19,13 @@ function LoginPage() {
         isAuthenticated,
         errorMessage,
     } = useAuth();
-    const navigate = useNavigate();
 
+    const navigate = useNavigate();
+    // Efecto para redireccionar si el usuario está autenticado
     useEffect(() => {
         if (isAuthenticated) navigate("/home");
     }, [isAuthenticated, navigate]);
-
+    // Función para manejar el envío del formulario
     const onSubmit = handleSubmit((data) => {
         signin(data);
     });
@@ -31,7 +34,7 @@ function LoginPage() {
         <div className="login-container">
             <div className="login-box">
                 <div className="logo">
-                    <img src="https://olsoftware.com/wp-content/uploads/2021/04/cropped-Logo-Oficial-OL-Software-230x64.png" alt="Logo" />
+                    <LazyLoadImage src="https://olsoftware.com/wp-content/uploads/2021/04/cropped-Logo-Oficial-OL-Software-230x64.png" alt="Logo" effect="blur" />
                 </div>
                 <h1 className="login-title">Bienvenido al gestor de proyectos!</h1>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}

@@ -1,12 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
+
+// Importación de módulos de React
 import { useEffect, createContext, useContext, useState, useCallback } from 'react';
+
+// Importación de funciones de API y de middleware
 import * as api from '../api/auth';
 import { getWeatherByCity } from '../api/weather';
 import { keysToCamel } from '../middleware/keysTocamel';
 
+// Creación del contexto de autenticación
 export const AuthContext = createContext();
 
+// Hook personalizado para utilizar el contexto de autenticación
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -15,7 +21,9 @@ export const useAuth = () => {
     return context;
 };
 
+// Componente proveedor de autenticación
 export const AuthProvider = ({ children }) => {
+    // Definición de estados
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -29,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     const [projects, setProjects] = useState(null);
     const [users, setUsers] = useState(null);
 
+    // Efecto para cargar el usuario y el clima al inicio
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -41,6 +50,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    // Función para iniciar sesión
     const signin = async (userData) => {
         try {
             const res = await api.loginRequest(userData);
@@ -61,6 +71,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Función para obtener el clima por ciudad
     const fetchWeather = useCallback(async (city) => {
         try {
             const response = await getWeatherByCity(city);
@@ -70,6 +81,7 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    // Función para cerrar sesión
     const logout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -77,6 +89,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
     };
 
+    // Función para verificar permisos
     const hasPermission = useCallback((action) => {
         if (!user) return false;
         if (user.user === 'admin') return true;
@@ -84,6 +97,7 @@ export const AuthProvider = ({ children }) => {
         return false;
     }, [user]);
 
+    // Función para manejar acciones de la API
     const handleApiAction = async (action, apiCall, data) => {
         if (!hasPermission(action)) {
             setErrorMessage(`No tienes permiso para ${action} ${data.type}`);
@@ -103,6 +117,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Funciones para gestionar proyectos
     const addProject = async (project) => {
         const newProject = await handleApiAction('create', api.addRProjects, { type: 'proyecto', payload: project });
         if (newProject) setProjects([...projects, newProject]);
@@ -118,6 +133,7 @@ export const AuthProvider = ({ children }) => {
         if (updatedProject) setProjects(projects.map((pro) => pro.id === id ? updatedProject : pro));
     };
 
+    // Funciones para gestionar usuarios
     const addUsers = async (user) => {
         const newUser = await handleApiAction('create', api.addUser, { type: 'usuario', payload: user });
         if (newUser) setUsers([...users, newUser]);
@@ -133,6 +149,7 @@ export const AuthProvider = ({ children }) => {
         if (success) setUsers(users.filter((user) => user.id !== id));
     };
 
+    // Efecto para cargar datos adicionales al inicio
     useEffect(() => {
         const fetchData = async (apiCall, setState) => {
             try {
@@ -153,6 +170,8 @@ export const AuthProvider = ({ children }) => {
         fetchData(api.getUsers, setUsers);
     }, []);
 
+
+    // Renderizado del componente proveedor de autenticación
     return (
         <AuthContext.Provider value={{
             signin,
