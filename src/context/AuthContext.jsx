@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
 
@@ -57,11 +58,17 @@ export const AuthProvider = ({ children }) => {
             if (res.status === 200 && res.data && res.data.length > 0) {
                 const responseData = keysToCamel(res.data[0]);
                 const token = responseData.token;
-                setUser(responseData);
-                setIsAuthenticated(true);
-                setErrorMessage("");
-                localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(responseData));
+
+                // Validar que el nombre de usuario coincida
+                if (responseData.user === userData.user && responseData.password === userData.password) {
+                    setUser(responseData);
+                    setIsAuthenticated(true);
+                    setErrorMessage("");
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("user", JSON.stringify(responseData));
+                } else {
+                    setErrorMessage("Nombre de usuario o contraseña incorrectos");
+                }
             } else {
                 setErrorMessage("Usuario no existe");
             }
