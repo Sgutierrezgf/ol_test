@@ -11,6 +11,9 @@ function ProyectsPage() {
     const [selectedProjectId, setSelectedProjectId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const { projects, deleteProjects, hasPermission } = useAuth();
+    const [successMessage, setSuccessMessage] = useState('');
+    const [successCreateMessage, setSuccessCreateMessage] = useState('');
+    const [deleteMessage, setDeleteMessage] = useState('');
 
     const handleAddProject = () => {
         // Verificación de permisos
@@ -45,8 +48,23 @@ function ProyectsPage() {
         // Limpieza de mensaje de error y eliminación del proyecto
         setErrorMessage('');
         deleteProjects(projectId);
+        showDeleteMessage('Proyecto eliminado correctamente');
     };
 
+    const showCreateMessage = (message) => {
+        setSuccessCreateMessage(message);
+        setTimeout(() => setSuccessCreateMessage(''), 3000);
+    };
+
+    const showSuccessMessage = (message) => {
+        setSuccessMessage(message);
+        setTimeout(() => setSuccessMessage(''), 3000);
+    };
+
+    const showDeleteMessage = (message) => {
+        setDeleteMessage(message);
+        setTimeout(() => setDeleteMessage(''), 3000);  // Ocultar después de 3 segundos
+    };
 
     return (
         <div className="project-container">
@@ -56,13 +74,17 @@ function ProyectsPage() {
                     <Button onClick={handleAddProject}>Nuevo Proyecto</Button>
                 </div>
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                {successCreateMessage && <p style={{ color: 'green' }}>{successCreateMessage}</p>}
+                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+                {deleteMessage && <p style={{ color: 'red' }}>{deleteMessage}</p>}
                 {showModalProject && (
-                    <ModalAddProject onClose={handleAddProject} />
+                    <ModalAddProject onClose={handleAddProject} onCreateSuccess={showCreateMessage} />
                 )}
                 {selectedProjectId && (
                     <ModalUpdateProject
                         project={projects.find(project => project.id === selectedProjectId)}
                         onClose={() => setSelectedProjectId(null)}
+                        onSuccess={showSuccessMessage}
                     />
                 )}
             </div>

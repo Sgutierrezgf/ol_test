@@ -1,3 +1,5 @@
+// camelCaseConverter.js
+
 // Función para convertir una cadena en formato snake_case o kebab-case a camelCase
 const toCamelCase = (str) => {
     return str.replace(/([-_][a-z])/gi, (match) => {
@@ -25,5 +27,4 @@ const keysToCamel = (obj) => {
     }, {});
 };
 
-// Exportación de la función keysToCamel
-export { keysToCamel };
+export { toCamelCase, keysToCamel };

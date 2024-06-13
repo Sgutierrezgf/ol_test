@@ -116,7 +116,6 @@ export const AuthProvider = ({ children }) => {
             console.error(`Error al ${action} ${data.type}:`, error);
         }
     };
-
     // Funciones para gestionar proyectos
     const addProject = async (project) => {
         const newProject = await handleApiAction('create', api.addRProjects, { type: 'proyecto', payload: project });
@@ -129,10 +128,18 @@ export const AuthProvider = ({ children }) => {
     };
 
     const updateProjects = async (id, updatedProjectData) => {
-        const updatedProject = await handleApiAction('update', api.updateProject, { type: 'proyecto', payload: { id, ...updatedProjectData } });
-        if (updatedProject) setProjects(projects.map((pro) => pro.id === id ? updatedProject : pro));
+        try {
+            const updatedProject = await handleApiAction('update', api.updateProject, { type: 'proyecto', payload: { id, ...updatedProjectData } });
+            if (updatedProject) {
+                setProjects(projects.map((pro) => (pro.id === id ? updatedProject : pro)));
+                return updatedProject;
+            } else {
+                console.error('Updated project is undefined');
+            }
+        } catch (error) {
+            console.error('Error updating project:', error);
+        }
     };
-
     // Funciones para gestionar usuarios
     const addUsers = async (user) => {
         const newUser = await handleApiAction('create', api.addUser, { type: 'usuario', payload: user });
@@ -140,10 +147,20 @@ export const AuthProvider = ({ children }) => {
     };
 
     const updateUser = async (id, updatedUserData) => {
-        const updatedUser = await handleApiAction('update', api.updateUsers, { type: 'usuario', payload: { id, ...updatedUserData } });
-        if (updatedUser) setUsers(users.map((usr) => usr.id === id ? updatedUser : usr));
-    };
+        try {
 
+            const updatedUser = await handleApiAction('update', api.updateUsers, { type: 'usuario', payload: { id, ...updatedUserData } });
+
+            if (updatedUser) {
+                setUsers(users.map((usr) => (usr.id === id ? updatedUser : usr)));
+                return updatedUser;
+            } else {
+                console.error('Updated user is undefined');
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+        }
+    };
     const deleteUsers = async (id) => {
         const success = await handleApiAction('delete', api.deleteUser, { type: 'usuario', payload: id });
         if (success) setUsers(users.filter((user) => user.id !== id));

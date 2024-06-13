@@ -28,8 +28,11 @@ export const getProjects = () =>
 
 export const addRProjects = (project) => axios.post(`${API}/projects`, project);
 
-export const updateProject = async (id, updatedProjectData) =>
-    axios.put(`${API}/projects/${id}`, updatedProjectData);
+export const updateProject = async (payload) => {
+    const { id, ...updatedProjectData } = payload;
+    return axios.put(`${API}/projects/${id}`, updatedProjectData);
+};
+
 
 export const deleteProject = async (id) =>
     axios.delete(`${API}/projects/${id}`);
@@ -39,8 +42,9 @@ export const getUsers = () =>
 
 export const addUser = (user) => axios.post(`${API}/users`, user);
 
-export const updateUsers = async (id, updatedUserData) =>
-    axios.put(`${API}/users/${id}`, updatedUserData);
-
+export const updateUsers = async (payload) => {
+    const { id, ...updatedUserData } = payload;
+    return axios.put(`${API}/users/${id}`, updatedUserData);
+}
 export const deleteUser = async (id) =>
     axios.delete(`${API}/users/${id}`);

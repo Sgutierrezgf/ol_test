@@ -21,7 +21,7 @@ import {
     TecnoOptions,
     generateNewIduser
 } from '../../helpers/helpers'
-import Success from '../messages/Success'
+
 
 function ModalNotification() {
     const { notification } = useAuth();
@@ -107,37 +107,42 @@ function ModalPendings() {
     );
 }
 
-function ModalAddProject({ onClose }) {
+function ModalAddProject({ onClose, onCreateSuccess }) {
     const [loading, setLoading] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const { addProject, projects } = useAuth();
 
     const { register, handleSubmit, control, formState: { errors } } = useForm();
 
     const onSubmitAdd = handleSubmit(async (values) => {
         setLoading(true);
+        try {
+            const formattedValues = formatValues(values);
+            const defaultValues = {
+                errors_count: 0,
+                warning_count: 0,
+                deploy_count: 0,
+                percentage_completion: 0,
+                report_nc: 0,
+                status: 'En Desarrollo',
+            };
 
-        const formattedValues = formatValues(values);
-        const defaultValues = {
-            errors_count: 0,
-            warning_count: 0,
-            deploy_count: 0,
-            percentage_completion: 0,
-            report_nc: 0,
-            status: 'En Desarrollo',
-        };
+            const newId = generateNewId(projects);
+            const newProject = {
+                id: newId,
+                ...formattedValues,
+                ...defaultValues,
+            };
 
-        const newId = generateNewId(projects);
-        const newProject = {
-            id: newId,
-            ...formattedValues,
-            ...defaultValues,
-        };
+            await addProject(newProject);
+            setLoading(false);
+            onCreateSuccess('Usuario creado correctamente')
+            onClose(true);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
 
-        await addProject(newProject);
-        setLoading(false);
-        setShowPopup(true);
-        onClose(true);
+
     });
 
     const animatedComponents = makeAnimated();
@@ -265,7 +270,6 @@ function ModalAddProject({ onClose }) {
                                 Cerrar
                             </button>
                         </div>
-                        {showPopup && <Success message="Proyecto agregado correctamente" onClose={() => setShowPopup(false)} />}
                     </form>
                 </div>
             </div>
@@ -273,16 +277,14 @@ function ModalAddProject({ onClose }) {
     );
 }
 
-function ModalUpdateProject({ project, onClose }) {
+function ModalUpdateProject({ project, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const { updateProjects } = useAuth();
 
     const { register, handleSubmit, control, formState: { errors } } = useForm();
 
     const onSubmitUpdate = handleSubmit(async (values) => {
         setLoading(true);
-
         try {
             const formattedValues = formatValues(values);
             const defaultValues = {
@@ -301,188 +303,194 @@ function ModalUpdateProject({ project, onClose }) {
 
             await updateProjects(project.id, updatedProjectData);
             setLoading(false);
-            setShowPopup(true);
+            onSuccess('Proyecto editado correctamente');  // Llama a onSuccess aquí
             onClose(true);
         } catch (error) {
             console.error(error);
+            setLoading(false);
         }
     });
 
     const animatedComponents = makeAnimated();
 
     return (
-        <div className="overlay">
-            <div className="modal">
-                <div className="form-container">
-                    <h1>Editar proyecto</h1>
-                    <form onSubmit={onSubmitUpdate}>
-                        <h3>Nombre Projecto</h3>
-                        <input
-                            type="text"
-                            {...register("project_name", { required: true })}
-                            placeholder="Nombre del Proyecto"
-                            defaultValue={project.project_name} // Utiliza el valor 'project_name' del proyecto para prellenar este campo
-                        />
-                        {errors.project_name && (
-                            <p className="error-message">El nombre del proyecto es requerido</p>
-                        )}
-                        <h3>URL del repositorio</h3>
-                        <input
-                            type="text"
-                            {...register("repo_url", { required: true })}
-                            placeholder="URL del Repositorio"
-                            defaultValue={project.repo_url} // Utiliza el valor 'repo_url' del proyecto para prellenar este campo
-                        />
-                        {errors.repo_url && <p className="error-message">La URL del repositorio es requerida</p>}
-                        <h3>Cliente</h3>
-                        <input
-                            type="text"
-                            {...register("client", { required: true })}
-                            placeholder="Cliente"
-                            defaultValue={project.client} // Utiliza el valor 'client' del proyecto para prellenar este campo
-                        />
-                        {errors.client && <p className="error-message">El cliente es requerido</p>}
-
-                        <h3>Desarrolladores</h3>
-                        <Controller
-                            name="developers"
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    isMulti
-                                    components={animatedComponents}
-                                    options={developersOptions}
-                                    defaultValue={project.developers} // Utiliza el valor 'developers' del proyecto para prellenar este campo
-                                    classNamePrefix="react-select"
-                                />
-                            )}
-                        />
-                        {errors.developers && <p className="error-message">Los desarrolladores son requeridos</p>}
-                        <h3>Integración Continua</h3>
-                        <div className="checkbox-container">
+        <>
+            <div className="overlay">
+                <div className="modal">
+                    <div className="form-container">
+                        <h1>Editar proyecto</h1>
+                        <form onSubmit={onSubmitUpdate}>
+                            <h3>Nombre Proyecto</h3>
                             <input
-                                type="checkbox"
-                                {...register("ci")}
-                                defaultChecked={project.ci} // Utiliza el valor 'ci' del proyecto para preseleccionar este campo
+                                type="text"
+                                {...register("project_name", { required: true })}
+                                placeholder="Nombre del Proyecto"
+                                defaultValue={project.project_name}
                             />
-                            <label htmlFor="ci">Tiene Integración Continua</label>
-                        </div>
-
-                        <div className="checkbox-container">
+                            {errors.project_name && <p className="error-message">El nombre del proyecto es requerido</p>}
+                            <h3>URL del repositorio</h3>
                             <input
-                                type="checkbox"
-                                {...register("cd")}
-                                defaultChecked={project.cd} // Utiliza el valor 'cd' del proyecto para preseleccionar este campo
+                                type="text"
+                                {...register("repo_url", { required: true })}
+                                placeholder="URL del Repositorio"
+                                defaultValue={project.repo_url}
                             />
-                            <label htmlFor="cd">Tiene Despliegue Continuo</label>
-                        </div>
+                            {errors.repo_url && <p className="error-message">La URL del repositorio es requerida</p>}
+                            <h3>Cliente</h3>
+                            <input
+                                type="text"
+                                {...register("client", { required: true })}
+                                placeholder="Cliente"
+                                defaultValue={project.client}
+                            />
+                            {errors.client && <p className="error-message">El cliente es requerido</p>}
 
-                        <h3>Tecnología Frontend</h3>
-                        <Controller
-                            name="frontend_tecnology"
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    isMulti
-                                    components={animatedComponents}
-                                    options={frontendOptions}
-                                    defaultValue={project.frontend_tecnology} // Utiliza el valor 'frontend_tecnology' del proyecto para preseleccionar este campo
-                                    classNamePrefix="react-select"
-                                />
-                            )}
-                        />
-                        {errors.frontend_tecnology && <p className="error-message">Tecnología Frontend es requerida</p>}
-
-                        <h3>Tecnología Backend</h3>
-                        <Controller
-                            name="backend_tecnology"
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    isMulti
-                                    components={animatedComponents}
-                                    options={backendOptions}
-                                    defaultValue={project.backend_tecnology} // Utiliza el valor 'backend_tecnology' del proyecto para preseleccionar este campo
-                                    classNamePrefix="react-select"
-                                />
-                            )}
-                        />
-                        {errors.backend_tecnology && <p className="error-message">Tecnología Backend es requerida</p>}
-
-                        <h3>Bases de Datos</h3>
-                        <Controller
-                            name="databases"
-                            control={control}
-                            rules={{ required: true }}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    isMulti
-                                    components={animatedComponents}
-                                    options={databaseOptions}
-                                    defaultValue={project.databases} // Utiliza el valor 'databases' del proyecto para preseleccionar este campo
-                                    classNamePrefix="react-select"
-                                />
-                            )}
-                        />
-                        {errors.databases && <p className="error-message">Bases de Datos son requeridas</p>}
-
-                        <div className='button-modal'>
-                            <button type="submit" disabled={loading}>
-                                {loading ? (
-                                    <div role="status">
-                                        <span>Loading...</span>
-                                    </div>
-                                ) : (
-                                    "Editar proyecto"
+                            <h3>Desarrolladores</h3>
+                            <Controller
+                                name="developers"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        isMulti
+                                        components={animatedComponents}
+                                        options={developersOptions}
+                                        defaultValue={project.developers}
+                                        classNamePrefix="react-select"
+                                    />
                                 )}
-                            </button>
-                            <button type="button" onClick={() => onClose(false)}>
-                                Cerrar
-                            </button>
-                        </div>
-                        {showPopup && <Success message="Proyecto editado correctamente" onClose={() => setShowPopup(false)} />}
-                    </form>
+                            />
+                            {errors.developers && <p className="error-message">Los desarrolladores son requeridos</p>}
+                            <h3>Integración Continua</h3>
+                            <div className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    {...register("ci")}
+                                    defaultChecked={project.ci}
+                                />
+                                <label htmlFor="ci">Tiene Integración Continua</label>
+                            </div>
+
+                            <div className="checkbox-container">
+                                <input
+                                    type="checkbox"
+                                    {...register("cd")}
+                                    defaultChecked={project.cd}
+                                />
+                                <label htmlFor="cd">Tiene Despliegue Continuo</label>
+                            </div>
+
+                            <h3>Tecnología Frontend</h3>
+                            <Controller
+                                name="frontend_tecnology"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        isMulti
+                                        components={animatedComponents}
+                                        options={frontendOptions}
+                                        defaultValue={project.frontend_tecnology}
+                                        classNamePrefix="react-select"
+                                    />
+                                )}
+                            />
+                            {errors.frontend_tecnology && <p className="error-message">Tecnología Frontend es requerida</p>}
+
+                            <h3>Tecnología Backend</h3>
+                            <Controller
+                                name="backend_tecnology"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        isMulti
+                                        components={animatedComponents}
+                                        options={backendOptions}
+                                        defaultValue={project.backend_tecnology}
+                                        classNamePrefix="react-select"
+                                    />
+                                )}
+                            />
+                            {errors.backend_tecnology && <p className="error-message">Tecnología Backend es requerida</p>}
+
+                            <h3>Bases de Datos</h3>
+                            <Controller
+                                name="databases"
+                                control={control}
+                                rules={{ required: true }}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        isMulti
+                                        components={animatedComponents}
+                                        options={databaseOptions}
+                                        defaultValue={project.databases}
+                                        classNamePrefix="react-select"
+                                    />
+                                )}
+                            />
+                            {errors.databases && <p className="error-message">Bases de Datos son requeridas</p>}
+
+                            <div className="button-modal">
+                                <button type="submit" disabled={loading}>
+                                    {loading ? (
+                                        <div role="status">
+                                            <span>Loading...</span>
+                                        </div>
+                                    ) : (
+                                        "Editar proyecto"
+                                    )}
+                                </button>
+                                <button type="button" onClick={() => onClose(false)}>
+                                    Cerrar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
-function ModalAddUser({ onClose }) {
+
+function ModalAddUser({ onClose, onCreateSuccess }) {
     const [loading, setLoading] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const { addUsers, users } = useAuth();
 
     const { register, handleSubmit, control, formState: { errors } } = useForm();
 
     const onSubmitAdd = handleSubmit(async (values) => {
         setLoading(true);
+        try {
+            values.rol = parseInt(values.rol);
 
-        values.rol = parseInt(values.rol);
+            const formattedValues = formatValuesUser(values);
+            const defaultValues = {
+                url_photo: 'https://plus.unsplash.com/premium_photo-1688891564708-9b2247085923?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyZmlsfGVufDB8fDB8fHww'
+            };
 
-        const formattedValues = formatValuesUser(values);
-        const defaultValues = {
-            url_photo: 'https://plus.unsplash.com/premium_photo-1688891564708-9b2247085923?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyZmlsfGVufDB8fDB8fHww'
-        };
+            const newId = generateNewIduser(users);
+            const newUser = {
+                id: newId,
+                ...formattedValues,
+                ...defaultValues
+            };
 
-        const newId = generateNewIduser(users);
-        const newUser = {
-            id: newId,
-            ...formattedValues,
-            ...defaultValues
-        };
+            await addUsers(newUser);
+            setLoading(false);
+            onCreateSuccess('Usuario creado correctamente')
+            onClose(true);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
 
-        await addUsers(newUser);
-        setLoading(false);
-        setShowPopup(true);
-        onClose(true);
+
     });
 
     const animatedComponents = makeAnimated();
@@ -559,7 +567,7 @@ function ModalAddUser({ onClose }) {
                                 Cerrar
                             </button>
                         </div>
-                        {showPopup && <Success message="Proyecto agregado correctamente" onClose={() => setShowPopup(false)} />}
+
                     </form>
                 </div>
             </div>
@@ -567,9 +575,8 @@ function ModalAddUser({ onClose }) {
     );
 }
 
-function ModalUpdateUser({ user, onClose }) {
+function ModalUpdateUser({ user, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false);
-    const [showPopup, setShowPopup] = useState(false);
     const { updateUser } = useAuth();
 
     const { register, handleSubmit, control, formState: { errors } } = useForm();
@@ -591,13 +598,24 @@ function ModalUpdateUser({ user, onClose }) {
                 ...defaultValues,
             };
 
-            await updateUser(user.id, updatedUserData);
-            setLoading(false);
-            setShowPopup(true);
-            onClose(true);
+
+
+
+            const result = await updateUser(user.id, updatedUserData);
+
+            if (result) {
+                setLoading(false);
+                onSuccess('Usuario editado correctamente');
+                onClose(true);
+            } else {
+                setLoading(false);
+                console.error('User update failed');
+            }
         } catch (error) {
             console.error(error);
         }
+
+
     });
 
     const animatedComponents = makeAnimated();
@@ -672,17 +690,18 @@ function ModalUpdateUser({ user, onClose }) {
                                         <span>Loading...</span>
                                     </div>
                                 ) : (
-                                    "Editar proyecto"
+                                    "Editar Usuario"
                                 )}
                             </button>
                             <button type="button" onClick={() => onClose(false)}>
                                 Cerrar
                             </button>
                         </div>
-                        {showPopup && <Success message="Proyecto editado correctamente" onClose={() => setShowPopup(false)} />}
+
                     </form>
                 </div>
             </div>
+
         </div>
     );
 }

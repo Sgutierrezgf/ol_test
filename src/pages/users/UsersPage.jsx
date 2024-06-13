@@ -11,6 +11,9 @@ function UsersPage() {
     const [selectedUserId, setSelecteUserId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const { users, deleteUsers, hasPermission } = useAuth();
+    const [successMessage, setSuccessMessage] = useState('');
+    const [successCreateMessage, setSuccessCreateMessage] = useState('');
+    const [deleteMessage, setDeleteMessage] = useState('');
 
     // Función para mostrar el modal de añadir usuario
     const handleAddUser = () => {
@@ -46,7 +49,23 @@ function UsersPage() {
         // Limpieza de mensaje de error y eliminación del usuario
         setErrorMessage('');
         deleteUsers(userId);
+        showDeleteMessage('Usuario eliminado correctamente');
     };
+    const showSuccessCreateMessage = (message) => {
+        setSuccessCreateMessage(message);
+        setTimeout(() => setSuccessCreateMessage(''), 3000);
+    };
+
+    const showSuccessMessage = (message) => {
+        setSuccessMessage(message);
+        setTimeout(() => setSuccessMessage(''), 3000);
+    };
+
+    const showDeleteMessage = (message) => {
+        setDeleteMessage(message);
+        setTimeout(() => setDeleteMessage(''), 3000);  // Ocultar después de 3 segundos
+    };
+
     return (
         <div className="project-container">
             <div className='project-title'>
@@ -55,13 +74,17 @@ function UsersPage() {
                     <Button onClick={handleAddUser}>Nuevo Usuario</Button>
                 </div>
                 {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                {successCreateMessage && <p style={{ color: 'green' }}>{successCreateMessage}</p>}
+                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+                {deleteMessage && <p style={{ color: 'red' }}>{deleteMessage}</p>}
                 {showModaluser && (
-                    <ModalAddUser onClose={handleAddUser} />
+                    <ModalAddUser onClose={handleAddUser} onCreateSuccess={showSuccessCreateMessage} />
                 )}
                 {selectedUserId && (
                     <ModalUpdateUser
                         user={users.find(user => user.id === selectedUserId)}
                         onClose={() => setSelecteUserId(null)}
+                        onSuccess={showSuccessMessage}
                     />
                 )}
             </div>
